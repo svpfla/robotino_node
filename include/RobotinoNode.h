@@ -8,6 +8,8 @@
 #ifndef ROBOTINONODE_H_
 #define ROBOTINONODE_H_
 
+#include "RobotState.h"
+
 #include "AnalogInputArrayROS.h"
 #include "BumperROS.h"
 #include "ComROS.h"
@@ -45,6 +47,9 @@ private:
 
 	sensor_msgs::PointCloud distances_clearing_msg_;
 	sensor_msgs::JointState joint_state_msg_;
+
+	RobotState rs_;
+	std::string urdf_file_name_;
 
 	AnalogInputArrayROS analog_input_array_;
 	BumperROS bumper_;

@@ -20,4 +20,7 @@
   <run_depend>nav_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>tf</run_depend>
+  <depend>roscpp</depend>
+  <depend>urdf</depend>
+  <depend>urdf_parser_plugin</depend>
 </package>

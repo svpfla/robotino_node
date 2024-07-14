@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   tf
+  urdf
+  urdf_parser_plugin
 )
 
 set(CMAKE_MODULE_PATH
@@ -71,7 +73,7 @@ find_package(RobotinoAPI2)
 catkin_package(
 #  INCLUDE_DIRS "${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}"
 #  LIBRARIES robotino_node
-  CATKIN_DEPENDS nav_msgs tf message_runtime geometry_msgs std_msgs
+  CATKIN_DEPENDS nav_msgs tf message_runtime geometry_msgs std_msgs urdf urdf_parser_plugin
 #  DEPENDS system_lib
 )
 
@@ -113,6 +115,7 @@ add_executable(
   src/OmniDriveROS.cpp
   src/PowerManagementROS.cpp
   src/RobotinoNode.cpp
+  src/RobotState.cpp
 )
 
 target_link_libraries(
@@ -128,6 +131,7 @@ add_executable(
   src/ComROS.cpp
   src/OdometryROS.cpp
   src/RobotinoOdometryNode.cpp
+  src/RobotState.cpp
 )
 
 target_link_libraries(
