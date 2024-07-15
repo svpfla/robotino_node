@@ -31,7 +31,7 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
 void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions)
 {
     /**
-     * TODO: Implement the update function
+     * TODO: Implement velocity update
      */
 
     int left_motor_position = motor_positions[0];
@@ -52,4 +52,20 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     angle_right = right_motor_position;
 
     sequence++;
+}
+
+void RobotState::setOdometry(double x, double y, double phi)
+{
+    this->x = x;
+    this->y = y;
+    this->phi = phi;
+    
+    vx = 0.0;
+    vy = 0.0;
+    omega = 0.0;
+
+    sequence = 0;
+
+    angle_left = 0.0;
+    angle_right = 0.0;
 }
