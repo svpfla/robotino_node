@@ -10,11 +10,12 @@
 
 #include "rec/robotino/api2/Odometry.h"
 #include "robotino_msgs/ResetOdometry.h"
-
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TransformStamped.h>
+#include "MotorArrayROS.h"
+#include "RobotState.h"
 
 class OdometryROS: public rec::robotino::api2::Odometry
 {
@@ -26,6 +27,13 @@ public:
 
 private:
 	ros::NodeHandle nh_;
+
+	std::vector<float> motor_velocities_;
+	std::vector<int> motor_positions_;
+
+	MotorArrayROS motor_array_;	
+
+	RobotState robot_state_;
 
 	ros::Publisher odometry_pub_;
 

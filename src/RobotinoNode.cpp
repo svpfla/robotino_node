@@ -105,12 +105,6 @@ bool RobotinoNode::spin()
 {
 	ros::Rate loop_rate( 30 );
 
-	if (!rs_.loadURDF(urdf_file_name_))
-	{
-		ROS_ERROR("Could not load URDF file");
-		return false;
-	}
-
 	while(nh_.ok())
 	{
 		curr_time_ = ros::Time::now();

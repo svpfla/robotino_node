@@ -10,7 +10,7 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
     urdf::Model model;
     std::string package_path = ros::package::getPath("robotino_description");
     std::string urdf_path = package_path + "/urdf/" + urdf_file_name;
-    
+
     if (!model.initFile(urdf_path))
     {
         ROS_ERROR("Failed to parse urdf file");
@@ -28,11 +28,28 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
     return true;
 }
 
-void RobotState::update(double delta_left, double delta_right)
+void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions)
 {
     /**
      * TODO: Implement the update function
      */
+
+    int left_motor_position = motor_positions[0];
+    int right_motor_position = motor_positions[2];
+
+    int delta_left = left_motor_position - angle_left;
+    int delta_right = right_motor_position - angle_right;
+
+    float deltaS = (delta_left + delta_right) / 2.0 * wheel_radius_;
+    float deltaPhi = (delta_right - delta_left) / wheel_distance_;
+
+    float R = deltaS / deltaPhi;
+    x += R * (sin(phi + deltaPhi) - sin(phi));
+    y += -R * (cos(phi + deltaPhi) - cos(phi));
+    phi += deltaPhi;
+
+    angle_left = left_motor_position;
+    angle_right = right_motor_position;
 
     sequence++;
 }
