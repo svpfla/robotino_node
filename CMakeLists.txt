@@ -132,6 +132,7 @@ add_executable(
   src/OdometryROS.cpp
   src/RobotinoOdometryNode.cpp
   src/RobotState.cpp
+  src/MotorArrayROS.cpp
 )
 
 target_link_libraries(
