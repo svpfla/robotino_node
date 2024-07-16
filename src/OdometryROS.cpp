@@ -48,8 +48,8 @@ void OdometryROS::readingsEvent(double x, double y, double phi,
 	odometry_msg_.pose.pose.position.y = robot_state_.getY();
 	odometry_msg_.pose.pose.position.z = 0.0;
 	odometry_msg_.pose.pose.orientation = phi_quat;
-	odometry_msg_.twist.twist.linear.x = robot_state_.getVX();
-	odometry_msg_.twist.twist.linear.y = robot_state_.getVY();
+	odometry_msg_.twist.twist.linear.x = robot_state_.getVx();
+	odometry_msg_.twist.twist.linear.y = robot_state_.getVy();
 	odometry_msg_.twist.twist.linear.z = 0.0;
 	odometry_msg_.twist.twist.angular.x = 0.0;
 	odometry_msg_.twist.twist.angular.y = 0.0;
