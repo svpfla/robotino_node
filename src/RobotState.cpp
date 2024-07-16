@@ -17,23 +17,57 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
         return false;
     }
 
-    /**
-     * TODO: Retrieve the wheel separation distance from the URDF file
-     */
+    // Retrieve the wheel separation distance
+    auto frontLeftWheel = model.getLink("wheel0_link");
+    auto frontRightWheel = model.getLink("wheel1_link");
+    if (frontLeftWheel && frontRightWheel)
+    {
+        wheel_distance_ = std::abs(frontLeftWheel->parent_joint->parent_to_joint_origin_transform.position.y -
+                                     frontRightWheel->parent_joint->parent_to_joint_origin_transform.position.y);
+        ROS_INFO("Wheel separation distance: %f", wheel_distance_);
+    }
+    else
+    {
+        ROS_ERROR("Failed to retrieve wheel positions");
+        return false;
+    }
 
-    /**
-     * TODO: Retrieve the wheel radius from the URDF file
-     */
+    // Retrieve the wheel radius
+    auto wheelLink = model.getLink("wheel0_link"); // Assuming all wheels have the same radius
+    if (wheelLink && wheelLink->visual && wheelLink->visual->geometry)
+    {
+        auto wheelGeometry = std::dynamic_pointer_cast<urdf::Cylinder>(wheelLink->visual->geometry);
+        if (wheelGeometry)
+        {
+            wheel_radius_ = wheelGeometry->radius;
+            ROS_INFO("Wheel radius: %f", wheel_radius_);
+        }
+        else
+        {
+            ROS_ERROR("Failed to retrieve wheel radius");
+            return false;
+        }
+    }
+    else
+    {
+        ROS_ERROR("Failed to retrieve wheel link");
+        return false;
+    }
 
     return true;
 }
 
 void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions)
 {
-    /**
-     * TODO: Implement velocity update
-     */
+    // Calculate velocities
+    float v_left = wheel_radius_ * motor_velocities[0];
+    float v_right = wheel_radius_ * motor_velocities[2];
 
+    vx = (v_right + v_left) / 2.0;
+    vy = 0.0;
+    omega = (v_right - v_left) / wheel_distance_;
+
+    // Calculate position
     int left_motor_position = motor_positions[0];
     int right_motor_position = motor_positions[2];
 
