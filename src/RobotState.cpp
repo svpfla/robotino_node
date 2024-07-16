@@ -8,7 +8,7 @@
 bool RobotState::loadURDF(const std::string &urdf_file_name)
 {
     urdf::Model model;
-    std::string package_path = ros::package::getPath("robotino_description");
+    std::string package_path = ros::package::getPath("robotino_description/");
     std::string urdf_path = package_path + urdf_file_name;
 
     if (!model.initFile(urdf_path))
