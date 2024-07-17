@@ -6,6 +6,7 @@
 #include <urdf/model.h>
 
 #define CPR 98000
+#define WHEEL_SLIP_CORRECTION 0.413
 
 bool RobotState::loadURDF(const std::string &urdf_file_name)
 {
@@ -69,13 +70,17 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     int delta_left = -(left_motor_position - last_left_motor_position);
     int delta_right = right_motor_position - last_right_motor_position;
 
-    ROS_INFO("delta_left: %d, delta_right: %d", delta_left, delta_right);
-
     double delta_left_rad = delta_left * 2 * M_PI / CPR;
     double delta_right_rad = delta_right * 2 * M_PI / CPR;
 
-    float deltaS = (delta_left_rad + delta_right_rad) / 2;
-    float deltaPhi = (float)(delta_right_rad - delta_left_rad) / wheel_distance_;
+    double delta_left_distance = delta_left_rad * wheel_radius_;
+    double delta_right_distance = delta_right_rad * wheel_radius_;
+
+    ROS_INFO("delta_left: %f, delta_right: %f", delta_left_distance, delta_right_distance);
+    float deltaS = (delta_left_distance + delta_right_distance) / 2;
+    float deltaPhi = (float)(delta_right_distance - delta_left_distance) / wheel_distance_;
+
+    deltaPhi *= WHEEL_SLIP_CORRECTION;    
 
     x += deltaS * cos(phi + deltaPhi / 2);
     y += deltaS * sin(phi + deltaPhi / 2);
@@ -101,6 +106,6 @@ void RobotState::setOdometry(double x, double y, double phi)
 
     sequence = 0;
 
-    //last_left_motor_position = 0.0;
-    //last_right_motor_position = 0.0;
+    // last_left_motor_position = 0.0;
+    // last_right_motor_position = 0.0;
 }
