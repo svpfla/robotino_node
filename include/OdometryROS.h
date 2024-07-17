@@ -29,9 +29,6 @@ public:
 private:
 	ros::NodeHandle nh_;
 
-	std::vector<float> motor_velocities_;
-	std::vector<int> motor_positions_;
-
 	MotorArrayROS motor_array_;	
 
 	RobotState robot_state_;

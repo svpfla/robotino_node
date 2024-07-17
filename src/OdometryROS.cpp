@@ -39,6 +39,8 @@ void OdometryROS::setTimeStamp(ros::Time stamp)
 void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr &msg)
 {
 
+	// only gets called when motor readings change
+
 	std::vector<float> motor_velocities(4);
 	std::vector<int> motor_positions(4);
 
@@ -59,7 +61,6 @@ void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr 
 
 	// Construct messages
 	geometry_msgs::Quaternion phi_quat = tf::createQuaternionMsgFromYaw(robot_state_.getPhi());
-
 	odometry_msg_.header.seq = robot_state_.getSequence();
 	odometry_msg_.header.frame_id = "odom";
 	odometry_msg_.header.stamp = stamp;
@@ -82,8 +83,9 @@ void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr 
 void OdometryROS::readingsEvent(double x, double y, double phi,
 								float vx, float vy, float omega, unsigned int sequence)
 {
-	geometry_msgs::Quaternion phi_quat = tf::createQuaternionMsgFromYaw(robot_state_.getPhi	());
 
+	// gets called periodically compared to motorReadingsEvent
+	geometry_msgs::Quaternion phi_quat = tf::createQuaternionMsgFromYaw(robot_state_.getPhi	());
 	odometry_transform_.header.frame_id = "odom";
 	odometry_transform_.header.stamp = ros::Time::now();
 	odometry_transform_.child_frame_id = "base_link";
@@ -98,8 +100,8 @@ bool OdometryROS::resetOdometryCallback(
 	robotino_msgs::ResetOdometry::Request &req,
 	robotino_msgs::ResetOdometry::Response &res)
 {
-	set(req.x, req.y, req.phi, true);
-	robot_state_.setOdometry(req.x, req.y, req.phi);
+	set(req.x, req.y, req.phi, true); // reset internal odometry (not used in this example)
+	robot_state_.setOdometry(req.x, req.y, req.phi); // reset odometry in RobotState
 
 	return true;
 }

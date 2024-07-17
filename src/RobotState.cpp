@@ -63,30 +63,37 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
 void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions)
 {
 
-    // Calculate position
-    int left_motor_position = motor_positions[0];
-    int right_motor_position = motor_positions[2];
+    // Calculate encoder positions
+    int left_motor_position = motor_positions[0]; // front left
+    int right_motor_position = motor_positions[2]; // back right
 
-    int delta_left = -(left_motor_position - last_left_motor_position);
+
+    // Calculate the change in encoder positions
+    int delta_left = -(left_motor_position - last_left_motor_position); // negative sign because the encoder values are decreasing
     int delta_right = right_motor_position - last_right_motor_position;
 
-    double delta_left_rad = delta_left * 2 * M_PI / CPR;
+    // conversion to radians
+    double delta_left_rad = delta_left * 2 * M_PI / CPR; 
     double delta_right_rad = delta_right * 2 * M_PI / CPR;
 
+    // Calculate the distance traveled by each wheel
     double delta_left_distance = delta_left_rad * wheel_radius_;
     double delta_right_distance = delta_right_rad * wheel_radius_;
 
     ROS_INFO("delta_left: %f, delta_right: %f", delta_left_distance, delta_right_distance);
+    
     float deltaS = (delta_left_distance + delta_right_distance) / 2;
     float deltaPhi = (float)(delta_right_distance - delta_left_distance) / wheel_distance_;
 
+    // since we don't have a 100% correct differential drive platform, the rotation is corrected with a constant factor
     deltaPhi *= WHEEL_SLIP_CORRECTION;    
 
+    // Calculate the new position and orientation of the robot
     x += deltaS * cos(phi + deltaPhi / 2);
     y += deltaS * sin(phi + deltaPhi / 2);
-
     phi += deltaPhi;
 
+    // save the velocities
     last_left_motor_position = left_motor_position;
     last_right_motor_position = right_motor_position;
 
