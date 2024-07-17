@@ -10,6 +10,7 @@
 
 #include "rec/robotino/api2/Odometry.h"
 #include "robotino_msgs/ResetOdometry.h"
+#include "robotino_msgs/MotorReadings.h"
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
@@ -37,6 +38,8 @@ private:
 
 	ros::Publisher odometry_pub_;
 
+	ros::Subscriber motor_readings_sub_;
+
 	ros::ServiceServer reset_odometry_server_;
 
 	nav_msgs::Odometry odometry_msg_;
@@ -46,7 +49,7 @@ private:
 
 	ros::Time stamp_;
 
-
+	void motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr &msg);
 	void readingsEvent(double x, double y, double phi,
 			float vx, float vy, float omega, unsigned int sequence );
 	bool resetOdometryCallback(
