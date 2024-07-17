@@ -5,6 +5,8 @@
 #include <ros/package.h>
 #include <urdf/model.h>
 
+#define CPR 98000
+
 bool RobotState::loadURDF(const std::string &urdf_file_name)
 {
     urdf::Model model;
@@ -23,7 +25,7 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
     if (frontLeftWheel && frontRightWheel)
     {
         wheel_distance_ = std::abs(frontLeftWheel->parent_joint->parent_to_joint_origin_transform.position.y -
-                                     frontRightWheel->parent_joint->parent_to_joint_origin_transform.position.y);
+                                   frontRightWheel->parent_joint->parent_to_joint_origin_transform.position.y);
         ROS_INFO("Wheel separation distance: %f", wheel_distance_);
     }
     else
@@ -59,47 +61,46 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
 
 void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions)
 {
-    // Calculate velocities
-    float v_left = wheel_radius_ * motor_velocities[0];
-    float v_right = wheel_radius_ * motor_velocities[2];
-
-    vx = (v_right + v_left) / 2.0;
-    vy = 0.0;
-    omega = (v_right - v_left) / wheel_distance_;
 
     // Calculate position
     int left_motor_position = motor_positions[0];
     int right_motor_position = motor_positions[2];
 
-    int delta_left = left_motor_position - angle_left;
-    int delta_right = right_motor_position - angle_right;
+    int delta_left = -(left_motor_position - last_left_motor_position);
+    int delta_right = right_motor_position - last_right_motor_position;
 
-    float deltaS = (delta_left + delta_right) / 2.0 * wheel_radius_;
-    float deltaPhi = (delta_right - delta_left) / wheel_distance_;
+    ROS_INFO("delta_left: %d, delta_right: %d", delta_left, delta_right);
 
-    float R = deltaS / deltaPhi;
-    x += R * (sin(phi + deltaPhi) - sin(phi));
-    y += -R * (cos(phi + deltaPhi) - cos(phi));
+    double delta_left_rad = delta_left * 2 * M_PI / CPR;
+    double delta_right_rad = delta_right * 2 * M_PI / CPR;
+
+    float deltaS = (delta_left_rad + delta_right_rad) / 2;
+    float deltaPhi = (float)(delta_right_rad - delta_left_rad) / wheel_distance_;
+
+    x += deltaS * cos(phi + deltaPhi / 2);
+    y += deltaS * sin(phi + deltaPhi / 2);
+
     phi += deltaPhi;
 
-    angle_left = left_motor_position;
-    angle_right = right_motor_position;
+    last_left_motor_position = left_motor_position;
+    last_right_motor_position = right_motor_position;
 
     sequence++;
 }
 
 void RobotState::setOdometry(double x, double y, double phi)
 {
+    ROS_INFO("Setting odometry to x: %f, y: %f, phi: %f", x, y, phi);
     this->x = x;
     this->y = y;
     this->phi = phi;
-    
+
     vx = 0.0;
     vy = 0.0;
     omega = 0.0;
 
     sequence = 0;
 
-    angle_left = 0.0;
-    angle_right = 0.0;
+    //last_left_motor_position = 0.0;
+    //last_right_motor_position = 0.0;
 }

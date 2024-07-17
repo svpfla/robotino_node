@@ -17,14 +17,14 @@ private:
     float omega;
     unsigned int sequence;
 
-    double angle_left;
-    double angle_right;
+    double last_left_motor_position;
+    double last_right_motor_position;
 
     double wheel_distance_;
     double wheel_radius_;
 
 public:
-    RobotState() : x(0.0), y(0.0), phi(0.0), vx(0.0), vy(0.0), omega(0.0), sequence(0), angle_left(0.0), angle_right(0.0), wheel_distance_(0.35), wheel_radius_(0.1) {}
+    RobotState() : x(0.0), y(0.0), phi(0.0), vx(0.0), vy(0.0), omega(0.0), sequence(0), last_left_motor_position(0.0), last_right_motor_position(0.0), wheel_distance_(0.35), wheel_radius_(0.1) {}
     bool loadURDF(const std::string &urdf_file);
 
     void update(std::vector<float> motor_velocities, std::vector<int> motor_positions);
