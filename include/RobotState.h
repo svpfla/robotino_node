@@ -8,18 +8,24 @@ class RobotState
 {
 
 private:
+    // position
     double x;
     double y;
     double phi;
 
+    // velocity
     float vx;
     float vy;
     float omega;
+
+    // sequence number to keep track of order of messages
     unsigned int sequence;
 
+    // last motor positions
     double last_left_motor_position;
     double last_right_motor_position;
 
+    // wheel parameters (will be read from URDF)
     double wheel_distance_;
     double wheel_radius_;
 
