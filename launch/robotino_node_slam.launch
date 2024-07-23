@@ -1,0 +1,54 @@
+<launch>
+	<arg name="hostname" default="0.0.0.0" />
+	<node name="robotino_node" pkg="robotino_node" type="robotino_node" output="screen">
+		<param name="hostname" value="$(arg hostname)" />
+		<param name="max_linear_vel" value="0.1" />
+		<param name="min_linear_vel" value="0.01" />
+		<param name="max_angular_vel" value="1.0" />
+		<param name="min_angular_vel" value="0.01" />
+		<remap from="robotino_joint_states" to="joint_states" />
+		<!--remap
+		from="image_raw" to="image"/-->
+	</node>
+
+	<node pkg="robotino_node" type="robotino_odometry_node" name="robotino_odometry_node"
+		output="screen">
+		<param name="hostname" value="$(arg hostname)" />
+		<param name="log_level" value="debug" />
+	</node>
+
+	<node name="robotino_laserrangefinder_node" pkg="robotino_node"
+		type="robotino_laserrangefinder_node" output="screen">
+		<param name="hostname" value="$(arg hostname)" />
+		<param name="laserRangeFinderNumber" value="0" />
+	</node>
+
+	<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"
+		output="screen">
+		<param name="publish_frequency" type="double" value="20.0" />
+	</node>
+
+	<node pkg="tf" type="static_transform_publisher" name="laser_camera_broadcaster"
+		args="0.0 0 0.0 0 0 0 laser camera_depth_frame 50" />
+
+	<node pkg="tf" type="static_transform_publisher" name="laser_link_broadcaster"
+		args="0.3 0.12 0.22 0 0 0 base_link laser 50" />
+
+	<!--LIDAR-->
+	<include file="$(find urg_node)/launch/urg_lidar.launch"> </include>
+
+	<!--SLAM-->
+	<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=scan"
+		output="screen">
+		<param name="map_update_interval" value="5.0" />
+		<param name="throttle_scans" value="10" />
+		<param name="maxUrange" value="7" />
+	</node>
+
+	<!-- camera -->
+	<!--
+	<node name="robotino_controller_node" pkg="robotino_controller" type="camera.py" output="screen"
+		launch-prefix="env ROS_NAMESPACE=/" />
+	-->
+	<param name="robot_description" textfile="$(find robotino_description)/robotino.urdf" />
+</launch>
