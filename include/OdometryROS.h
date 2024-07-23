@@ -46,6 +46,8 @@ private:
 
 	ros::Time stamp_;
 
+	bool odometry_initialized_;
+
 	void motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr &msg);
 	void readingsEvent(double x, double y, double phi,
 			float vx, float vy, float omega, unsigned int sequence );

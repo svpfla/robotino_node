@@ -15,10 +15,7 @@ OdometryROS::OdometryROS()
 
 	odometry_pub_ = nh_.advertise<nav_msgs::Odometry>("odom", 1, true);
 	robot_state_.loadURDF("robotino.urdf");
-
-	motor_velocities_.resize(4);
-	motor_positions_.resize(4);
-
+	odometry_initialized_ = false;
 	reset_odometry_server_ = nh_.advertiseService("reset_odometry",
 												  &OdometryROS::resetOdometryCallback, this);
 	motor_readings_sub_ = nh_.subscribe("motor_readings", 1, &OdometryROS::motorReadingsEvent, this);
@@ -38,6 +35,14 @@ void OdometryROS::setTimeStamp(ros::Time stamp)
 
 void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr &msg)
 {
+
+	const unsigned int motor_readings_threshold = 3;
+	// to avoid initial odometry jump since the encoders are not zeroed
+	if (!odometry_initialized_ && robot_state_.getSequence() <= motor_readings_threshold)
+	{
+		robot_state_.setOdometry(0.0, 0.0, 0.0);
+		odometry_initialized_ = robot_state_.getSequence() > motor_readings_threshold;
+	}
 
 	// only gets called when motor readings change
 
@@ -85,7 +90,7 @@ void OdometryROS::readingsEvent(double x, double y, double phi,
 {
 
 	// gets called periodically compared to motorReadingsEvent
-	geometry_msgs::Quaternion phi_quat = tf::createQuaternionMsgFromYaw(robot_state_.getPhi	());
+	geometry_msgs::Quaternion phi_quat = tf::createQuaternionMsgFromYaw(robot_state_.getPhi());
 	odometry_transform_.header.frame_id = "odom";
 	odometry_transform_.header.stamp = ros::Time::now();
 	odometry_transform_.child_frame_id = "base_link";
@@ -100,7 +105,7 @@ bool OdometryROS::resetOdometryCallback(
 	robotino_msgs::ResetOdometry::Request &req,
 	robotino_msgs::ResetOdometry::Response &res)
 {
-	set(req.x, req.y, req.phi, true); // reset internal odometry (not used in this example)
+	set(req.x, req.y, req.phi, true);				 // reset internal odometry (not used in this example)
 	robot_state_.setOdometry(req.x, req.y, req.phi); // reset odometry in RobotState
 
 	return true;

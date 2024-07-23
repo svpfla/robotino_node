@@ -80,8 +80,6 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     double delta_left_distance = delta_left_rad * wheel_radius_;
     double delta_right_distance = delta_right_rad * wheel_radius_;
 
-    ROS_INFO("delta_left: %f, delta_right: %f", delta_left_distance, delta_right_distance);
-    
     float deltaS = (delta_left_distance + delta_right_distance) / 2;
     float deltaPhi = (float)(delta_right_distance - delta_left_distance) / wheel_distance_;
 
@@ -110,8 +108,6 @@ void RobotState::setOdometry(double x, double y, double phi)
     vx = 0.0;
     vy = 0.0;
     omega = 0.0;
-
-    sequence = 0;
 
     // last_left_motor_position = 0.0;
     // last_right_motor_position = 0.0;
