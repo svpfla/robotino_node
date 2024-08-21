@@ -33,7 +33,7 @@ public:
     RobotState() : x(0.0), y(0.0), phi(0.0), vx(0.0), vy(0.0), omega(0.0), sequence(0), last_left_motor_position(0.0), last_right_motor_position(0.0), wheel_distance_(0.35), wheel_radius_(0.1) {}
     bool loadURDF(const std::string &urdf_file);
 
-    void update(std::vector<float> motor_velocities, std::vector<int> motor_positions);
+    void update(std::vector<float> motor_velocities, std::vector<int> motor_positions, double dt);
     void setOdometry(double x, double y, double phi);
 
     double getX() const { return x; }

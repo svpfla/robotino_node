@@ -49,11 +49,11 @@ private:
 	sensor_msgs::JointState joint_state_msg_;
 
 	AnalogInputArrayROS analog_input_array_;
-	BumperROS bumper_;
+	// BumperROS bumper_;
 	ComROS com_;
 	DigitalInputArrayROS digital_input_array_;
 	DigitalOutputArrayROS digital_output_array_;
-	DistanceSensorArrayROS distance_sensor_array_;
+	// DistanceSensorArrayROS distance_sensor_array_;
 	EncoderInputROS encoder_input_;
 	MotorArrayROS motor_array_;
 	OmniDriveROS omni_drive_;

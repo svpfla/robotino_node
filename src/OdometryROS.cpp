@@ -16,6 +16,7 @@ OdometryROS::OdometryROS()
 	odometry_pub_ = nh_.advertise<nav_msgs::Odometry>("odom", 1, true);
 	robot_state_.loadURDF("robotino.urdf");
 	odometry_initialized_ = false;
+	last_mr_ts = ros::Time::now();
 	reset_odometry_server_ = nh_.advertiseService("reset_odometry",
 												  &OdometryROS::resetOdometryCallback, this);
 	motor_readings_sub_ = nh_.subscribe("motor_readings", 1, &OdometryROS::motorReadingsEvent, this);
@@ -60,9 +61,14 @@ void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr 
 	motor_positions[3] = msg->positions[3];
 
 	ros::Time stamp = msg->stamp;
-
-	// Calculate odometry
-	robot_state_.update(motor_velocities, motor_positions);
+	if (stamp.toSec() < 1000) {
+		stamp = ros::Time::now();
+	}
+	double dt = (stamp - last_mr_ts).toSec();
+	if (dt < 0) {ROS_ERROR("Robotino OdometryROS variable dt on line 68 less zero");}
+	last_mr_ts = stamp;
+	Calculate odometry
+	robot_state_.update(motor_velocities, motor_positions, dt);
 
 	// Construct messages
 	geometry_msgs::Quaternion phi_quat = tf::createQuaternionMsgFromYaw(robot_state_.getPhi());

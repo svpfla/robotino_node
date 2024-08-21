@@ -45,6 +45,7 @@ private:
 	tf::TransformBroadcaster odometry_transform_broadcaster_;
 
 	ros::Time stamp_;
+	ros::Time last_mr_ts; // last motor reading time stamp
 
 	bool odometry_initialized_;
 
