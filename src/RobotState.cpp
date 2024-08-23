@@ -5,8 +5,8 @@
 #include <ros/package.h>
 #include <urdf/model.h>
 
-#define CPR 98000
-#define WHEEL_SLIP_CORRECTION 0.413
+#define CPR 42000 //42000 //98000
+#define WHEEL_SLIP_CORRECTION 0.47 //0.413
 
 bool RobotState::loadURDF(const std::string &urdf_file_name)
 {
@@ -60,27 +60,36 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
     return true;
 }
 
+<<<<<<< Updated upstream
 void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions, double dt)
+=======
+void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions, float dt)
+>>>>>>> Stashed changes
 {
 
     // Calculate encoder positions
-    int left_motor_position = motor_positions[0]; // front left
-    int right_motor_position = motor_positions[2]; // back right
+    // int left_motor_position = motor_positions[0]; // front left
+    // int right_motor_position = motor_positions[2]; // back right
 
 
-    // Calculate the change in encoder positions
-    int delta_left = -(left_motor_position - last_left_motor_position); // negative sign because the encoder values are decreasing
-    int delta_right = right_motor_position - last_right_motor_position;
+    // Calculate the change in encoder positions according to motor_positions
+    // int delta_left = -(left_motor_position - last_left_motor_position); // negative sign because the encoder values are decreasing
+    // int delta_right = right_motor_position - last_right_motor_position;
 
+
+    // Calculate the change in encoder positions according to motor_velocities 
+    float delta_left = -motor_velocities[0];
+    float delta_right = motor_velocities[2];
+    // ROS_WARN("delta left: %f, dt: %f", delta_left, dt);
     // conversion to radians
-    double delta_left_rad = delta_left * 2 * M_PI / CPR; 
-    double delta_right_rad = delta_right * 2 * M_PI / CPR;
+    float delta_left_rad = delta_left * 2 * M_PI / CPR; 
+    float delta_right_rad = delta_right * 2 * M_PI / CPR;
 
     // Calculate the distance traveled by each wheel
-    double delta_left_distance = delta_left_rad * wheel_radius_;
-    double delta_right_distance = delta_right_rad * wheel_radius_;
-
+    float delta_left_distance = delta_left_rad * wheel_radius_;
+    float delta_right_distance = delta_right_rad * wheel_radius_;
     float deltaS = (delta_left_distance + delta_right_distance) / 2;
+<<<<<<< Updated upstream
     float deltaPhi = (float)(delta_right_distance - delta_left_distance) / wheel_distance_;
 
     // vx = (float)(deltaS / dt);
@@ -90,8 +99,20 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     // if ((omega > 0  && omega < 0.005) ||  (omega < 0 && omega > -0.005))
     //     omega = 0.0;
     
+=======
+    float deltaPhi = (delta_right_distance - delta_left_distance) / wheel_distance_;
+    // ROS_WARN("deltaphi: %f, dt: %f", deltaPhi, dt);
+>>>>>>> Stashed changes
     // since we don't have a 100% correct differential drive platform, the rotation is corrected with a constant factor
     deltaPhi *= WHEEL_SLIP_CORRECTION;    
+    vx = deltaS / dt;
+    ROS_WARN("vx: %f, deltaS: %f, deltaPhi: %f, dt: %f, ",vx, deltaS, deltaPhi, dt);
+    ROS_WARN("CPR = %f", delta_right * 2 * M_PI * wheel_radius_ / dt);
+    ROS_WARN("WSC: %f", dt / deltaPhi);
+    if (abs(delta_left) != abs(delta_right))
+        ROS_ERROR("dl: %f, dr:%f", abs(delta_left), abs(delta_right));
+    ROS_WARN("-------------------------------------------------------------");
+    omega = deltaPhi / dt;
 
     // Calculate the new position and orientation of the robot
     x += deltaS * cos(phi + deltaPhi / 2);
@@ -99,8 +120,8 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     phi += deltaPhi;
 
     // save the velocities
-    last_left_motor_position = left_motor_position;
-    last_right_motor_position = right_motor_position;
+    // last_left_motor_position = left_motor_position;
+    // last_right_motor_position = right_motor_position;
 
     sequence++;
 }

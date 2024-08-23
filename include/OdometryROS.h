@@ -45,7 +45,11 @@ private:
 	tf::TransformBroadcaster odometry_transform_broadcaster_;
 
 	ros::Time stamp_;
+<<<<<<< Updated upstream
 	ros::Time last_mr_ts; // last motor reading time stamp
+=======
+	ros::Time last_update_;
+>>>>>>> Stashed changes
 
 	bool odometry_initialized_;
 

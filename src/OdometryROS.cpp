@@ -20,6 +20,7 @@ OdometryROS::OdometryROS()
 	reset_odometry_server_ = nh_.advertiseService("reset_odometry",
 												  &OdometryROS::resetOdometryCallback, this);
 	motor_readings_sub_ = nh_.subscribe("motor_readings", 1, &OdometryROS::motorReadingsEvent, this);
+	last_update_ = ros::Time::now();
 }
 
 OdometryROS::~OdometryROS()
@@ -44,6 +45,8 @@ void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr 
 		robot_state_.setOdometry(0.0, 0.0, 0.0);
 		odometry_initialized_ = robot_state_.getSequence() > motor_readings_threshold;
 	}
+	// if (msg->stamp.toSec() < 1000)
+	// 	return;
 
 	// only gets called when motor readings change
 
@@ -61,6 +64,7 @@ void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr 
 	motor_positions[3] = msg->positions[3];
 
 	ros::Time stamp = msg->stamp;
+<<<<<<< Updated upstream
 	if (stamp.toSec() < 1000) {
 		stamp = ros::Time::now();
 	}
@@ -68,6 +72,13 @@ void OdometryROS::motorReadingsEvent(const robotino_msgs::MotorReadingsConstPtr 
 	if (dt < 0) {ROS_ERROR("Robotino OdometryROS variable dt on line 68 less zero");}
 	last_mr_ts = stamp;
 	Calculate odometry
+=======
+	float dt = (stamp - last_update_).toSec();
+	if (dt < 0) 
+		return;
+	last_update_ = stamp;
+	// Calculate odometry
+>>>>>>> Stashed changes
 	robot_state_.update(motor_velocities, motor_positions, dt);
 
 	// Construct messages
