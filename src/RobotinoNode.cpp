@@ -63,12 +63,20 @@ void RobotinoNode::initMsgs()
 		distances_clearing_msg_.points[i].z = 0.05; // 5cm above ground
 	}
 
-	joint_state_msg_.name.resize(3);
-	joint_state_msg_.position.resize(3, 0.0);
-	joint_state_msg_.velocity.resize(3, 0.0);
-	joint_state_msg_.name[0] = "wheel2_joint";
-	joint_state_msg_.name[1] = "wheel0_joint";
-	joint_state_msg_.name[2] = "wheel1_joint";
+	// joint_state_msg_.name.resize(3);
+	// joint_state_msg_.position.resize(3, 0.0);
+	// joint_state_msg_.velocity.resize(3, 0.0);
+	// joint_state_msg_.name[0] = "wheel2_joint";
+	// joint_state_msg_.name[1] = "wheel0_joint";
+	// joint_state_msg_.name[2] = "wheel1_joint";
+
+	joint_state_msg_.name.resize(4);
+	joint_state_msg_.position.resize(4, 0.0);
+	joint_state_msg_.velocity.resize(4, 0.0);
+	joint_state_msg_.name[0] = "wheel0_joint"; // front left
+	joint_state_msg_.name[1] = "wheel1_joint"; // front right
+	joint_state_msg_.name[2] = "wheel2_joint"; // rear left
+	joint_state_msg_.name[3] = "wheel3_joint"; // rear right
 
 	motor_velocities_.resize(4);
 	motor_positions_.resize(4);
@@ -89,13 +97,30 @@ void RobotinoNode::publishJointStateMsg()
 {
 	motor_array_.getMotorReadings( motor_velocities_, motor_positions_ );
 
-	joint_state_msg_.velocity[0] = ( ( motor_velocities_[2] / 16 ) * (2 * 3.142) / 60 );
-	joint_state_msg_.velocity[1] = ( ( motor_velocities_[0] / 16 ) * (2 * 3.142) / 60 );
-	joint_state_msg_.velocity[2] = ( ( motor_velocities_[1] / 16 ) * (2 * 3.142) / 60 );
+	// joint_state_msg_.velocity[0] = ( ( motor_velocities_[2] / 16 ) * (2 * 3.142) / 60 );
+	// joint_state_msg_.velocity[1] = ( ( motor_velocities_[0] / 16 ) * (2 * 3.142) / 60 );
+	// joint_state_msg_.velocity[2] = ( ( motor_velocities_[1] / 16 ) * (2 * 3.142) / 60 );
 
-	joint_state_msg_.position[0] = ( motor_positions_[2] / 16 ) * (2 * 3.142);
-	joint_state_msg_.position[1] = ( motor_positions_[0] / 16 ) * (2 * 3.142);
-	joint_state_msg_.position[2] = ( motor_positions_[1] / 16 ) * (2 * 3.142);
+	// joint_state_msg_.position[0] = ( motor_positions_[2] / 16 ) * (2 * 3.142);
+	// joint_state_msg_.position[1] = ( motor_positions_[0] / 16 ) * (2 * 3.142);
+	// joint_state_msg_.position[2] = ( motor_positions_[1] / 16 ) * (2 * 3.142);
+
+	/*
+	Note:
+	we define positive velocity as roboter forward drives, negative velocity backward drives.
+
+	value we get from motor_velocities regarding to the front left wheel (with index 0) is 
+	in contrast to 	our definition, so we need to negate this value.
+	*/
+	joint_state_msg_.velocity[0] = - ( ( motor_velocities_[0] / 16 ) * (2 * 3.142) / 60 );
+	joint_state_msg_.velocity[1] = ( ( motor_velocities_[2] / 16 ) * (2 * 3.142) / 60 );
+	joint_state_msg_.velocity[2] = joint_state_msg_.velocity[0];
+	joint_state_msg_.velocity[3] = joint_state_msg_.velocity[1];
+
+	joint_state_msg_.position[0] = - ( motor_positions_[0] / 16 ) * (2 * 3.142);
+	joint_state_msg_.position[1] = ( motor_positions_[2] / 16 ) * (2 * 3.142);
+	joint_state_msg_.position[2] = joint_state_msg_.position[0];
+	joint_state_msg_.position[3] = joint_state_msg_.position[1];
 
 	joint_state_msg_.header.stamp = curr_time_;
 	joint_states_pub_.publish( joint_state_msg_ );

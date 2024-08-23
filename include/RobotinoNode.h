@@ -8,6 +8,8 @@
 #ifndef ROBOTINONODE_H_
 #define ROBOTINONODE_H_
 
+#include "RobotState.h"
+
 #include "AnalogInputArrayROS.h"
 #include "BumperROS.h"
 #include "ComROS.h"
