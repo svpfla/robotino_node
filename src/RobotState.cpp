@@ -60,11 +60,7 @@ bool RobotState::loadURDF(const std::string &urdf_file_name)
     return true;
 }
 
-<<<<<<< Updated upstream
-void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions, double dt)
-=======
 void RobotState::update(std::vector<float> motor_velocities, std::vector<int> motor_positions, float dt)
->>>>>>> Stashed changes
 {
 
     // Calculate encoder positions
@@ -89,20 +85,8 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     float delta_left_distance = delta_left_rad * wheel_radius_;
     float delta_right_distance = delta_right_rad * wheel_radius_;
     float deltaS = (delta_left_distance + delta_right_distance) / 2;
-<<<<<<< Updated upstream
-    float deltaPhi = (float)(delta_right_distance - delta_left_distance) / wheel_distance_;
-
-    // vx = (float)(deltaS / dt);
-    // if ((vx > 0  && vx < 0.005) || (vx < 0 && vx > -0.005))
-    //     vx = 0.0;
-    // omega = (float)(deltaPhi / dt);
-    // if ((omega > 0  && omega < 0.005) ||  (omega < 0 && omega > -0.005))
-    //     omega = 0.0;
-    
-=======
     float deltaPhi = (delta_right_distance - delta_left_distance) / wheel_distance_;
     // ROS_WARN("deltaphi: %f, dt: %f", deltaPhi, dt);
->>>>>>> Stashed changes
     // since we don't have a 100% correct differential drive platform, the rotation is corrected with a constant factor
     deltaPhi *= WHEEL_SLIP_CORRECTION;    
     vx = deltaS / dt;
