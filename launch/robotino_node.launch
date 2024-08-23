@@ -4,8 +4,8 @@
 		<param name="hostname" value="$(arg hostname)" />
 		<param name="max_linear_vel" value="0.25" />
 		<param name="min_linear_vel" value="-0.25" />
-		<param name="max_angular_vel" value="0.125" />
-		<param name="min_angular_vel" value="-0.125" />
+		<param name="max_angular_vel" value="0.39" />
+		<param name="min_angular_vel" value="-0.39" />
 		<remap from="robotino_joint_states" to="joint_states" />
 		<!--remap
 		from="image_raw" to="image"/-->

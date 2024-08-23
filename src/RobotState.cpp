@@ -76,7 +76,7 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     // Calculate the change in encoder positions according to motor_velocities 
     float delta_left = -motor_velocities[0];
     float delta_right = motor_velocities[2];
-    // ROS_WARN("delta left: %f, dt: %f", delta_left, dt);
+    
     // conversion to radians
     float delta_left_rad = delta_left * 2 * M_PI / CPR; 
     float delta_right_rad = delta_right * 2 * M_PI / CPR;
@@ -86,15 +86,13 @@ void RobotState::update(std::vector<float> motor_velocities, std::vector<int> mo
     float delta_right_distance = delta_right_rad * wheel_radius_;
     float deltaS = (delta_left_distance + delta_right_distance) / 2;
     float deltaPhi = (delta_right_distance - delta_left_distance) / wheel_distance_;
+    ROS_WARN("WSC: %f", 0.125 * M_PI * dt / deltaPhi);
     // ROS_WARN("deltaphi: %f, dt: %f", deltaPhi, dt);
     // since we don't have a 100% correct differential drive platform, the rotation is corrected with a constant factor
     deltaPhi *= WHEEL_SLIP_CORRECTION;    
     vx = deltaS / dt;
     ROS_WARN("vx: %f, deltaS: %f, deltaPhi: %f, dt: %f, ",vx, deltaS, deltaPhi, dt);
     ROS_WARN("CPR = %f", delta_right * 2 * M_PI * wheel_radius_ / dt);
-    ROS_WARN("WSC: %f", dt / deltaPhi);
-    if (abs(delta_left) != abs(delta_right))
-        ROS_ERROR("dl: %f, dr:%f", abs(delta_left), abs(delta_right));
     ROS_WARN("-------------------------------------------------------------");
     omega = deltaPhi / dt;
 
